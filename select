@@ -112,3 +112,25 @@ SELECT
     AVG(YEAR(CURDATE()) - YEAR(data_nascimento)) AS idade_media
 FROM
     paciente;
+
+
+/*Quais especialidades médicas possuem maior tempo médio de espera para agendamento de consultas?*/
+
+SELECT m.especialidade, AVG(DATEDIFF(c.data, CURDATE())) AS media_tempo_espera
+FROM consulta c
+JOIN rel_consulta_medico rcm ON c.id_consulta = rcm.id_consulta
+JOIN medico m ON rcm.id_medico = m.id_medico
+WHERE c.data > CURDATE()
+GROUP BY m.especialidade
+ORDER BY media_tempo_espera DESC;
+
+
+/*Qual o índice de retorno dos pacientes para novas consultas?*/
+
+SELECT p.id_paciente, p.nome, COUNT(c.id_consulta) AS total_consultas
+FROM paciente p
+JOIN rel_consulta_paciente rcp ON p.id_paciente = rcp.id_paciente
+JOIN consulta c ON c.id_consulta = rcp.id_consulta
+GROUP BY p.id_paciente, p.nome
+HAVING COUNT(c.id_consulta) > 1
+ORDER BY total_consultas DESC;
