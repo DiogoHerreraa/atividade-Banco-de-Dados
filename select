@@ -1,0 +1,114 @@
+
+/*Qual a quantidade média de pacientes antedidos por dia ?*/
+SELECT
+    AVG(contagem_pacientes) AS media_pacientes_por_dia
+FROM (
+    SELECT
+        data,
+        COUNT(DISTINCT id_paciente) AS contagem_pacientes
+    FROM
+        consulta
+    GROUP BY
+        data
+) AS consultas_por_dia;
+
+
+/*Qual o dia da semana que a media de consultas é alta ?*/
+
+SELECT
+    DAYOFWEEK(data) AS dia_semana,
+    COUNT(*) AS total_consultas
+FROM
+    consulta
+GROUP BY
+    dia_semana
+ORDER BY
+    total_consultas DESC
+LIMIT 1;
+
+
+/*Qual dia da semana o restaurante tem mais visitas ?*/
+
+
+
+SELECT
+    DAYOFWEEK(data_hora) AS dia_semana,
+    COUNT(*) AS total_reservas
+FROM
+    recepcao_restaurante
+GROUP BY
+    dia_semana
+ORDER BY
+    total_reservas DESC
+LIMIT 1;
+
+
+
+
+/*Qual a especialidade medica com a maior demanda ?*/
+SELECT
+    m.especialidade,
+    COUNT(c.id_consulta) AS total_consultas
+FROM
+    consulta c
+JOIN
+    rel_consulta_medico rcm ON c.id_consulta = rcm.id_consulta
+JOIN
+    medico m ON rcm.id_medico = m.id_medico
+GROUP BY
+    m.especialidade
+ORDER BY
+    total_consultas DESC
+LIMIT 1;
+
+
+/*Qual o pedido que mais sai do restaurante ?*/
+
+SELECT
+    id_item_pedido,
+    COUNT(*) AS quantidade
+FROM
+    item_pedido
+GROUP BY
+    id_item_pedido
+ORDER BY
+    quantidade DESC
+LIMIT 1;
+
+
+/*Qual o tipo de evento que mais recorrente na sala de eventos ?*/
+
+SELECT
+    tipo_evento,
+    COUNT(*) AS quantidade
+FROM
+    evento
+GROUP BY
+    tipo_evento
+ORDER BY
+    quantidade DESC
+LIMIT 1;
+
+
+/*Qual medico é mais requisitado no hospital ?*/
+
+SELECT
+    m.id_medico,
+    m.nome,
+    COUNT(rcm.id_consulta) AS numero_consultas
+FROM
+    medico m
+JOIN
+    rel_consulta_medico rcm ON m.id_medico = rcm.id_medico
+GROUP BY
+    m.id_medico, m.nome
+ORDER BY
+    numero_consultas DESC;
+
+
+/*Qual a média de idade de paciente que freqeunta no hospital ?*/
+
+SELECT
+    AVG(YEAR(CURDATE()) - YEAR(data_nascimento)) AS idade_media
+FROM
+    paciente;
